@@ -1,0 +1,3 @@
+[submodule "paper-helpers"]
+	path = paper-helpers
+	url = git@github.com:adrn/paper-helpers.git
