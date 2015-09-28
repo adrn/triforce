@@ -1,0 +1,32 @@
+The first 6 rows are one column:
+
+0 - integer specifying the type of velocity IC I am using
+1 - q=Msec/Mprm
+2 - eccentricity
+3 - sqrt(Number of total test particles)
+4 - outer radius of IC population (measured in binary separations) 
+5 - number of total timesteps
+
+Then Each row gives: t_ij, x_ij, y_ij, vx_ij, vy_ij, CJ_ij for the ith
+timestep and the jth particle. The file looks like
+
+
+Vprof
+q
+ecc
+sqrt(Np) 
+R_out(t=0)
+nt
+t_00,  x_00, y_00, vx_00, vy_00, CJ_00
+.
+.
+.
+t_n0,  x_nt0, y_nt0, vx_nt0, vy_nt0, CJ_nt0
+.
+.
+.
+t_0Np,  x_0Np, y_0Np, vx_0Np, vy_0Np, CJ_0Np
+.
+.
+.
+t_n0,  x_ntNp, y_ntNp, vx_ntNp, vy_ntNp, CJ_ntNp
