@@ -1,5 +1,8 @@
 %\documentclass{emulateapj}
-\documentclass[letterpaper,12pt,preprint]{aastex}
+%\documentclass[letterpaper,12pt,preprint]{aastex}
+\documentclass[usenatbib]{mn2e}
+\bibliographystyle{mn2e}
+
 
 % packages
 \usepackage{amssymb,amsmath,amsbsy}
@@ -13,26 +16,53 @@
 \newcommand{\inverse}[1]{{#1}^{-1}}
 \newcommand{\msun}{\mathrm{M}_\odot}
 
+
+%Dan's Math Definitions
+\newcommand{\scripty}[1]{\ensuremath{\mathcalligra{#1}}}
+\def\sr{\scripty{r}}
+\def\Mach{\mathcal{M}}
+\def\bin{\rm{bin}}
+\def\Mdot{\dot{M}}
+\def\Msun{ M_{ \rm{\odot} } }
+
+\def\xb{\bar{x}}
+\def\yb{\bar{y}}
+
+
+
+
+
+
+
+
 \begin{document}
 
 \title{Cavity search: a parameter study of the importance of chaos for feeding black hole binaries}
-\author{
-Daniel J. D'Orazio\altaffilmark{\colum},
-Adrian M. Price-Whelan\altaffilmark{\colum}
+\author[D. J. D'Orazio, Adrian Price-Whelan]{Daniel J. D'Orazio$^1$, Adrian Price-Whelan$^1$  
+    \thanks{dorazio@astro.columbia.edu; ampw@astro.columbia.edu}\\
+     $^1$Department of Astronomy, Columbia University, 550 West 120th Street, New York, NY 10027 
 }
 
+%\author{
+%Daniel J. D'Orazio\altaffilmark{\colum},
+%Adrian M. Price-Whelan\altaffilmark{\colum}
+%}
+
 % Affiliations
-\newcommand{\colum}{1}
+%\newcommand{\colum}{1}
 % \newcommand{\adrn}{2}
 
-\altaffiltext{\colum}{Department of Astronomy,
-                      Columbia University,
-                      550 W 120th St.,
-                      New York, NY 10027, USA}
+%\altaffiltext{\colum}{Department of Astronomy,
+   %                   Columbia University,
+      %                550 W 120th St.,
+         %             New York, NY 10027, USA}
 % \altaffiltext{\adrn}{To whom correspondence should be addressed: adrn@astro.columbia.edu}
 
+\maketitle
+
+
 \begin{abstract}
-Danny boy
+%Danny boy
 % Context
 The interaction of a binary and a thin gasesous disk lies at the heart
 of a number of important astrophysical phenomena. These include the
@@ -65,15 +95,96 @@ transitions and also some dynamics stuff related to Adrian's work.
 
 \end{abstract}
 
-\keywords{ 
-stuff
-}
+%\keywords{ 
+%stuff
+%}
 
 \section{Introduction}\label{sec:introduction}
 
 \section{Methods}\label{sec:methods}
 
-Describe potential and things varied (mass ratio, viscosity, what else?)
+\subsection{Equations of Motions}
+%\section{Equations of Motions}
+The equations of motion for a test particle in the plane of an
+eccentric binary are described by the elliptical, restricted three
+body problem (ER3Bp). We write the ER3Bp as two coupled second order
+ODE's in the non-uniformly rotating, isotropically pulsating, frame of
+the eccentric binary ($\bar{x}$, $\bar{y}$),
+\begin{equation}
+\begin{array}{c}
+\ddot{\xb} - 2\dot{\yb} = \frac{\partial{U}}{\partial{\xb}}  \left( 1 + e \cos{f} \right)^{-1} \nonumber \\ \nonumber \\ 
+\ddot{\yb} + 2\dot{\xb} = \frac{\partial{U}}{\partial{\yb}}  \left( 1 + e \cos{f} \right)^{-1}
+\label{Eqmotion}
+\end{array}
+\end{equation}
+for binary with true anomaly $f$, eccentricity $e$, mean motion $\equiv 1$,
+and $ \ \dot{} \ \equiv d/df$. Because the independent variable is
+$f$, there is no need to solve for $f$ in terms of the time $t$ unless
+converting the solution back to the non-rotating frame.
+
+The ($\bar{x}$, $\bar{y}$) are dimensionless coordinates of the
+massless third particle which are constructed by dividing the
+dimensional coordinates by the time changing binary separation
+\begin{equation}
+\begin{array}{c}
+\xb = \xb^* \frac{1 + e \cos{f}}{a ( 1-e^2) } \nonumber \\ \nonumber \\ 
+\yb = \yb^* \frac{1 + e \cos{f}}{a ( 1-e^2) } 
+\end{array}
+\end{equation}
+where $*$ denotes the dimensional variable.
+
+The position of the primaries is found from dividing the dimensional
+position over time by the binary position and is always fixed at the
+same values as in the circular R3B, \textit{i.e.}
+\begin{equation} \nonumber
+\xb_2 = \xb^*_2 \frac{1+e \cos{f}}{a (1-e^2)} =   \frac{a}{1+q} \frac{(1-e^2)}{1+e \cos{f}}  \frac{1+e \cos{f}}{a (1-e^2)}  = \frac{1}{1+q}
+\end{equation}
+where $q = M_2/M_1$, $M_2 < M_1$.Similarly $\xb_p = -q/(1+q)$.
+
+There is no longer a conserved quantity in the ER3B, but there is an
+analogue to the Jacobi constant which is time dependent,
+\begin{equation}
+C_{eJ} = \frac{2 U}{1 + e \cos{f}} - \left( \dot{\xb}^2 + \dot{\yb}^2 \right) - 2 e \int^f_{f_0}{\frac{ U \sin{f} }{(1 + e \cos{f})^2 } \ df}
+\end{equation}
+and can be used to check the accuracy of the integrator (not yet
+implemented).
+
+\subsection{Set-up}
+To set up initial velocity profiles recall that the independent
+variable is no longer the time, but the true anomaly $f$. This can be
+taken into account most simply by using the Virial theorem with the
+pseudo potential of Eq. \ref{Eqmotion}. Assuming only azimuthal
+initial velocities,
+\begin{equation}
+\begin{array}{c}
+\bar{v_x} = -v_{\phi} \frac{\yb_0}{R} \quad \bar{v_x} = v_{\phi} \frac{\xb_0}{R} \\ \nonumber \\ \nonumber
+v_{\phi} =   \left[ \sqrt{ \frac{\mu_1}{\bar{r}_1}  +  \frac{\mu_2}{\bar{r}_2} }  \right] \left( 1 + e \frac{\xb}{R} \right)^{-1}  - R\\ \nonumber \\ \nonumber
+\bar{r}^2_1 =  (\xb + \mu_2)^2 + \yb^2  \qquad \bar{r}^2_2 =  (\xb - \mu_1)^2 + \yb^2  \\ \nonumber \\ \nonumber
+R^2 = \xb^2 + \yb^2 \\ \nonumber \\ \nonumber
+\mu_1 = \frac{1}{1+q} = 1-\mu_2  \qquad \mu_2 = \frac{q}{1+q}
+\end{array}
+\end{equation}
+where we subtract the speed of the rotating frame from the azimuthal
+velocity. Since the angular frequency of the rotating frame is unity
+in our coordinates we need only subtract the particle specific
+velocity $R$.
+
+%If we were going to convert back into the time coordinate, we would need to use
+%\begin{equation}
+%df  = n \sqrt{1-e^2} \left( \frac{a}{r}\right)^2 dt = \frac{n (1 + e \cos{f})^2}{(1-e^2)^{3/2}}  dt
+%\end{equation}
+%where the last line substitutes the time dependent binary separation $r$. 
+
+To convert back to time t, and unscaled distances we multiply the
+coordinates by the time dependent binary separation and solve for
+$t(f)$ in the usual manner.
+
+
+
+Describe potential and things varied (mass ratio, viscosity,
+eccentricity, what else?)\\ Lets start with mass ratio - look for
+Linblad resonances, and see what happens when linear stability is
+lost.
 
 Orbits are integrated with ...
 
@@ -81,11 +192,12 @@ Orbits are integrated with ...
 
 \section{Conclusions}\label{sec:conclusions}
 
-\acknowledgements
-APW is supported by a National Science Foundation Graduate Research Fellowship under Grant No.\ 11-44155.
+%\acknowledgements
+\section{Acknowledgments}
+APW is supported by a National Science Foundation Graduate Research Fellowship under Grant No.\ 11-44155. DJD is supported by a National Science Foundation Graduate Research Fellowship under Grant No. DGE1144155
 This work was supported in part by the National Science Foundation under Grant No. PHYS-1066293.
 This research made use of Astropy, a community-developed core Python package for Astronomy \citep{astropy13}.
-This work additionally relied on Columbia University's \emph{Hotfoot} and \emph{Yeti} compute clusters, and we acknowledge the Columbia HPC support staff for assistance. \\
+This work additionally relied on Columbia University's \emph{Hotfoot} and \emph{Yeti} compute clusters, and we acknowledge the Columbia HPC support staff for assistance, especially Mr. Alex Bergier. 
 
 %\bibliographystyle{apj}
 %\bibliography{refs}
