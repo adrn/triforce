@@ -8,6 +8,7 @@
 \usepackage{amssymb,amsmath,amsbsy}
 \usepackage{booktabs}
 \usepackage[caption=false]{subfig}
+\usepackage{color}
 
 % commands
 \newcommand{\given}{\,|\,}
@@ -16,6 +17,13 @@
 \newcommand{\inverse}[1]{{#1}^{-1}}
 \newcommand{\msun}{\mathrm{M}_\odot}
 
+\newcommand{\project}[1]{\textsl{#1}}
+\newcommand{\superfreq}{\project{SuperFreq}}
+
+% TO DO
+\usepackage{graphicx} 
+\newcommand{\apwtodo}[1]{{\color{red} APW: (\MakeUppercase{#1})}}
+\newcommand{\djdtodo}[1]{{\color{green} DJD: (\MakeUppercase{#1})}}
 
 %Dan's Math Definitions
 \newcommand{\scripty}[1]{\ensuremath{\mathcalligra{#1}}}
@@ -188,7 +196,24 @@ lost.
 
 Orbits are integrated with ...
 
-\subsection{Chaos detection}\label{sec:chaos}
+\subsection{Numerical determination of the fundamental frequencies}\label{sec:freqs}
+
+Regular orbits in Hamiltonian systems may be represented in a special set of coordinates known as angle-action variables \citep[e.g.,][]{goldstein80}: in these coordinates, the position variables---the angles---increase linearly with time with rates set by a set of fundamental frequencies, and the momentum variables---the actions---are integrals of motion. More specifically, for a regular orbit represented in coordinates $(x_n, v_n)$, there exists a transformation $(x_n, v_n)\rightarrow(\theta_n, J_n)$ such that
+\begin{align}
+	\theta_n(t) &= \theta_n(0) + \Omega_n\,t\\
+	J_n &= {\rm const.}
+\end{align}
+The $\Omega_n$ are known as the fundamental frequencies and there are $N$ such frequencies for non-resonant orbits in systems with $N$ degrees of freedom.
+
+\apwtodo{Need to use a different symbol here for integer vector}
+A resonant orbit is an orbit for which there exists at least one relation such that\footnote{The repeated indices imply summation.} $n_n\,\Omega_n = 0$ where $n_n$ is a vector of integers. \apwtodo{More theory-speakery here methinks...}
+
+[How to numerically determine the frequencies using:]
+\begin{equation}
+	x(t) = \sum a_k\,e^{i \, \omega_k \, t}
+\end{equation}
+
+[How to detect chaos with this shite and measure rate of frequency diffusion]
 
 \section{Conclusions}\label{sec:conclusions}
 
