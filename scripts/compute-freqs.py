@@ -100,8 +100,8 @@ def main(filename, overwrite=False, plot=False):
                       " the correct path?")
 
     plotpath = os.path.join("plots", os.path.splitext(os.path.basename(filename))[0])
-    if not os.path.exists(plotpath):
-        os.mkdir(plotpath)
+    if not os.path.exists(plotpath) and plot:
+        os.makedirs(plotpath)
 
     basename = os.path.splitext(filename)[0]
     save_file = "{}_freqs.npy".format(basename)
@@ -164,7 +164,7 @@ def main(filename, overwrite=False, plot=False):
         try:
             freqs,tbl,ixes = sf.find_fundamental_frequencies(fs, min_freq=1E-6,
                                                              min_freq_diff=1E-6, nintvec=15)
-        except ValueError:
+        except RuntimeError:
             freqs = np.ones(ndof)*np.nan
 
         # # verify that reconstructed time series looks like input
