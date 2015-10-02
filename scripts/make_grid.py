@@ -80,6 +80,9 @@ def main(ngrid, CJ, q, ecc=0., nu=0., max_xy=3., output_path=None,
 
         w0 = np.hstack((xyz,vxyz))
 
+        CJs = 2*r3bp_potential(xyz, q, ecc, nu) - vx**2 - vy**2
+        assert np.allclose(CJs, CJ)
+
     else:
         w0 = np.load(w0path)
         logger.info("Initial conditions file already exists!\n\t{}".format(w0path))
@@ -114,6 +117,8 @@ if __name__ == '__main__':
 
     parser.add_argument("--cj", dest="jacobi_energy", type=float, required=True,
                         help="Jacobi energy")
+    parser.add_argument("--maxxy", dest="max_xy", type=float, default=3.,
+                        help="Max. abs. value of x,y")
     parser.add_argument("--q", dest="q", type=float, required=True,
                         help="q, binary mass ratio")
     parser.add_argument("--ecc", dest="ecc", type=float, default=0.,
@@ -129,7 +134,7 @@ if __name__ == '__main__':
     else:
         logger.setLevel(logging.INFO)
 
-    main(args.ngrid, args.jacobi_energy,
+    main(args.ngrid, args.jacobi_energy, max_xy=args.max_xy,
          q=args.q, ecc=args.ecc, nu=args.nu,
          run_name=args.run_name, plot=args.plot,
          output_path=args.output_path, overwrite=args.overwrite)
