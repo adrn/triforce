@@ -1,2 +1,4 @@
 paper/ms.pdf
 *.npy
+build
+plots
