@@ -59,9 +59,19 @@ def main(ngrid, CJ, q, ecc=0., nu=0., max_xy=3., output_path=None,
 
     if not os.path.exists(w0path):
         # generate initial conditions
-        grid = np.linspace(-max_xy,max_xy,ngrid)
-        z = np.zeros(ngrid*ngrid)
-        xyz = np.vstack(map(np.ravel, np.meshgrid(grid, grid))+[z]).T.copy()
+
+        # box
+        # grid = np.linspace(-max_xy,max_xy,ngrid)
+        # z = np.zeros(ngrid*ngrid)
+        # xyz = np.vstack(map(np.ravel, np.meshgrid(grid, grid))+[z]).T.copy()
+
+        # disc
+        r = np.sqrt(np.random.uniform(0.,max_xy**2,ngrid*ngrid))
+        phi = np.random.uniform(0.,2*np.pi,ngrid*ngrid)
+        xyz = np.zeros((len(r),3))
+        xyz[:,0] = r*np.cos(phi)
+        xyz[:,1] = r*np.sin(phi)
+
         U = r3bp_potential(xyz, q, ecc, nu)
 
         # ignore all points above ZVC
