@@ -22,14 +22,20 @@ __all__ = ['Freqmap']
 class Freqmap(OrbitGridExperiment):
     # failure error codes
     error_codes = {
-        1: "SuperFreq failed on find_fundamental_frequencies().",
-        2: "Unexpected failure."
+        1: "Failed to integrate orbit.",
+        2: "Energy conservation criteria not met.",
+        3: "SuperFreq failed on find_fundamental_frequencies().",
+        4: "Unexpected failure."
     }
 
     cache_dtype = [
         ('freqs','f8',(2,3)), # three fundamental frequencies computed in 2 windows
         ('amps','f8',(2,3)), # amplitudes of frequencies in time series
+        ('dE_max','f8'), # maximum energy difference (compared to initial) during integration
         ('success','b1'), # whether computing the frequencies succeeded or not
+        ('is_tube','b1'), # the orbit is a tube orbit
+        ('dt','f8'), # timestep used for integration
+        ('nsteps','i8'), # number of steps integrated
         ('error_code','i8') # if not successful, why did it fail? see below
     ]
 
