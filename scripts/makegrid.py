@@ -16,6 +16,7 @@ import matplotlib.pyplot as pl
 import numpy as np
 
 # Project
+from triforce import project_path
 from triforce.r3bp import r3bp_potential
 
 """
