@@ -30,8 +30,8 @@ class Freqmap(NoPotentialOrbitGridExperiment):
     }
 
     cache_dtype = [
-        ('freqs','f8',(2,3)), # three fundamental frequencies computed in 2 windows
-        ('amps','f8',(2,3)), # amplitudes of frequencies in time series
+        ('freqs','f8',(2,2)), # three fundamental frequencies computed in 2 windows
+        ('amps','f8',(2,2)), # amplitudes of frequencies in time series
         ('dE_max','f8'), # maximum energy difference (compared to initial) during integration
         ('success','b1'), # whether computing the frequencies succeeded or not
         ('dt','f8'), # timestep used for integration
@@ -109,27 +109,27 @@ class Freqmap(NoPotentialOrbitGridExperiment):
         sl2 = slice(nsteps//2,None)
 
         if c['force_cartesian']:
-            fs1 = [(ws[sl1,0,j] + 1j*ws[sl1,0,j+3]) for j in range(3)]
-            fs2 = [(ws[sl2,0,j] + 1j*ws[sl2,0,j+3]) for j in range(3)]
+            fs1 = [(ws[sl1,0,j] + 1j*ws[sl1,0,j+3]) for j in range(2)]
+            fs2 = [(ws[sl2,0,j] + 1j*ws[sl2,0,j+3]) for j in range(2)]
 
         else: # use Poincare polars
             # first need to flip coordinates so that circulation is around z axis
             new_ws = gc.cartesian_to_poincare_polar(ws)
-            fs1 = [(new_ws[sl1,j] + 1j*new_ws[sl1,j+3]) for j in range(3)]
-            fs2 = [(new_ws[sl2,j] + 1j*new_ws[sl2,j+3]) for j in range(3)]
+            fs1 = [(new_ws[sl1,j] + 1j*new_ws[sl1,j+3]) for j in range(2)]
+            fs2 = [(new_ws[sl2,j] + 1j*new_ws[sl2,j+3]) for j in range(2)]
 
         logger.debug("Running SuperFreq on the orbits")
         try:
             freqs1,d1,ixs1 = sf1.find_fundamental_frequencies(fs1, nintvec=c['nintvec'])
             freqs2,d2,ixs2 = sf2.find_fundamental_frequencies(fs2, nintvec=c['nintvec'])
         except:
-            result['freqs'] = np.ones((2,3))*np.nan
+            result['freqs'] = np.ones((2,2))*np.nan
             result['success'] = False
             result['error_code'] = 3
             return result
 
         result['freqs'] = np.vstack((freqs1, freqs2))
-        # result['dE_max'] = dEmax
+        result['dE_max'] = dEmax
         result['dt'] = float(dt)
         result['nsteps'] = nsteps
         result['amps'] = np.vstack((d1['|A|'][ixs1], d2['|A|'][ixs2]))
