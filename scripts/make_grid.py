@@ -32,38 +32,65 @@ CJ = 3.15345
 CJ = 3.2069
 """
 
-def main(ngrid, CJ, q, ecc=0., nu=0., max_xy=3., output_path=None, overwrite=False, plot=False):
+def main(ngrid, CJ, q, ecc=0., nu=0., max_xy=3., output_path=None,
+         run_name=None, overwrite=False, plot=False):
     """
     """
 
-    filename = "w0_n{}_cj{:.3f}_q{:.0e}_e{:.0e}_nu{:.0e}.npy".format(ngrid, CJ, q, ecc, nu)
+    # create path
+    if output_path is None:
+        output_path = os.path.join(project_path, "output")
 
-    grid = np.linspace(-max_xy,max_xy,ngrid)
-    z = np.zeros(ngrid*ngrid)
-    xyz = np.vstack(map(np.ravel, np.meshgrid(grid, grid))+[z]).T.copy()
-    U = r3bp_potential(xyz, q, ecc, nu)
+        if run_name is None:
+            run_name = "n{}_cj{:.3f}_q{:.0e}_e{:.0e}_nu{:.0e}".format(ngrid, CJ, q, ecc, nu)
+        path = os.path.join(output_path, run_name)
+    else:
+        path = output_path
 
-    # ignore all points above ZVC
-    ix = 2*U >= CJ
-    xyz = xyz[ix]
-    U = U[ix]
+    logger.info("Caching to: {}".format(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-    r = np.sqrt(np.sum(xyz**2, axis=-1))
-    vmag = np.sqrt(2*U - CJ)
-    vx = -vmag * xyz[:,1]/r
-    vy = vmag * xyz[:,0]/r
+    # path to initial conditions cache
+    w0path = os.path.join(path, 'w0.npy')
 
-    vxyz = np.zeros_like(xyz)
-    vxyz[:,0] = vx
-    vxyz[:,1] = vy
+    if os.path.exists(w0path) and overwrite:
+        os.remove(w0path)
+
+    if not os.path.exists(w0path):
+        # generate initial conditions
+        grid = np.linspace(-max_xy,max_xy,ngrid)
+        z = np.zeros(ngrid*ngrid)
+        xyz = np.vstack(map(np.ravel, np.meshgrid(grid, grid))+[z]).T.copy()
+        U = r3bp_potential(xyz, q, ecc, nu)
+
+        # ignore all points above ZVC
+        ix = 2*U >= CJ
+        xyz = xyz[ix]
+        U = U[ix]
+
+        r = np.sqrt(np.sum(xyz**2, axis=-1))
+        vmag = np.sqrt(2*U - CJ)
+        vx = -vmag * xyz[:,1]/r
+        vy = vmag * xyz[:,0]/r
+
+        vxyz = np.zeros_like(xyz)
+        vxyz[:,0] = vx
+        vxyz[:,1] = vy
+
+        w0 = np.hstack((xyz,vxyz))
+
+    else:
+        w0 = np.load(w0path)
+        logger.info("Initial conditions file already exists!\n\t{}".format(w0path))
 
     if plot:
-        fig,axes = pl.subplots(1,1,figsize=(6,6))
-        pl.plot(xyz[:,0], xyz[:,1], ls='none', marker=',')
-        pl.show()
+        fig,ax = pl.subplots(1,1,figsize=(8,8))
+        ax.plot(w0[:,0], w0[:,1], ls='none', marker=',', color='k')
+        fig.savefig(os.path.join(path, 'w0.png'), dpi=300)
 
-    w0 = np.hstack((xyz,vxyz))
-    np.save(os.path.join(output_path, filename), w0)
+    logger.info("Number of initial conditions: {}".format(len(w0)))
+    np.save(w0path, w0)
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -76,8 +103,12 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--overwrite", action="store_true", dest="overwrite",
                         default=False, help="DESTROY. DESTROY. (default = False)")
 
-    parser.add_argument("-p","--output-path", dest="output_path", required=True,
+    parser.add_argument("-p","--output-path", dest="output_path", default=None,
                         help="Path to the 'output' directory.")
+    parser.add_argument("--plot", dest="plot", action="store_true", default=False,
+                        help="Plot the initial conditions.")
+    parser.add_argument("--name", dest="run_name", default=None,
+                        help="Name the run.")
     parser.add_argument("-n","--ngrid", dest="ngrid", default=128, type=int,
                         help="Number of grid points.")
 
@@ -100,6 +131,7 @@ if __name__ == '__main__':
 
     main(args.ngrid, args.jacobi_energy,
          q=args.q, ecc=args.ecc, nu=args.nu,
+         run_name=args.run_name, plot=args.plot,
          output_path=args.output_path, overwrite=args.overwrite)
 
     sys.exit(0)
