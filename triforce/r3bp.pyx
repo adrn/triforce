@@ -36,10 +36,6 @@ cdef extern from "dopri/dop853.h":
                 double fac2, double beta, double hmax, double h, long nmax, int meth,
                 long nstiff, unsigned nrdens, unsigned* icont, unsigned licont)
 
-    void Fwrapper (unsigned ndim, double t, double *w, double *f,
-                   GradFn func, double *pars, unsigned norbits)
-    double six_norm (double *x)
-
 cdef extern from "src/_r3bp.h":
     void r3bp_derivs(unsigned ndim, double t, double *w, double *f,
                      GradFn func, double *pars, unsigned norbits)
@@ -61,6 +57,7 @@ cpdef dop853_integrate_r3bp(double[:,::1] w0, double[::1] t,
                             double q, double ecc, double nu,
                             double atol, double rtol, int nmax):
     """
+    dop853_integrate_r3bp(w0, t, q, ecc, nu, atol, rtol, nmax)
 
     Parameters
     ----------
@@ -117,3 +114,30 @@ cpdef dop853_integrate_r3bp(double[:,::1] w0, double[::1] t,
                 all_w[j,i,k] = w[i*ndim + k]
 
     return np.asarray(t), np.asarray(all_w)
+
+cpdef r3bp_potential(double[:,::1] xyz,
+                     double q, double ecc, double nu):
+    """
+    r3bp_potential(xyz, q, ecc, nu)
+    """
+    cdef:
+        int npoints = xyz.shape[0]
+        int i
+
+        double u2 = q/(1.+q)
+        double u1 = 1.0-u2
+        double r1, r2
+        double a  = 1.0
+        double n  = 1./sqrt(a*a*a)
+        double[::1] U = np.zeros(npoints)
+        double x,y,z
+
+    for i in range(npoints):
+        x = xyz[i,0]
+        y = xyz[i,1]
+        z = xyz[i,2]
+        r1 = sqrt((x+u2)*(x+u2) + y*y + z*z)
+        r2 = sqrt((x-u1)*(x-u1) + y*y + z*z)
+        U[i] = n*n/2. * (x*x + y*y) + u1/r1 + u2/r2
+
+    return np.array(U)
