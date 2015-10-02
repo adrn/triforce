@@ -94,7 +94,7 @@ class Freqmap(NoPotentialOrbitGridExperiment):
 
         if dEmax > c['energy_tolerance']:
             logger.warning("Failed due to energy conservation check.")
-            result['freqs'] = np.ones((2,3))*np.nan
+            result['freqs'] = np.ones((2,2))*np.nan
             result['success'] = False
             result['error_code'] = 2
             result['dE_max'] = dEmax
@@ -108,6 +108,7 @@ class Freqmap(NoPotentialOrbitGridExperiment):
         sl1 = slice(None,nsteps//2+1)
         sl2 = slice(nsteps//2,None)
 
+        # TODO: the 2's below should change if we do the full 3d problem
         if c['force_cartesian']:
             fs1 = [(ws[sl1,0,j] + 1j*ws[sl1,0,j+3]) for j in range(2)]
             fs2 = [(ws[sl2,0,j] + 1j*ws[sl2,0,j+3]) for j in range(2)]
